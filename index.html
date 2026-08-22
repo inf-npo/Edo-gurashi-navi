@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>刻 - KOKU | 不定時法・時間栄養学ダッシュボード</title>
+  <title>刻 - KOKU | 江戸の知恵と時間栄養学</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- SunCalc CDN (太陽位置計算) -->
@@ -13,13 +13,25 @@
     .font-serif-ja { font-family: 'Shippori Mincho', serif; }
   </style>
 </head>
-<body class="bg-stone-950 text-stone-100 min-h-screen antialiased">
+<body class="bg-stone-950 text-stone-100 min-h-screen antialiased selection:bg-amber-900 selection:text-amber-100">
   <div class="max-w-md mx-auto p-4 space-y-4">
     
     <!-- ヘッダー -->
-    <header class="flex justify-between items-center py-2 border-b border-stone-850">
-      <div class="font-serif-ja text-xl font-bold tracking-widest text-amber-200">刻 <span class="text-xs font-sans text-stone-400 font-normal">KOKU</span></div>
-      <div id="location-text" class="text-xs text-stone-400 font-mono">東京（計算中...）</div>
+    <header class="flex justify-between items-center py-2 border-b border-stone-800">
+      <div class="font-serif-ja text-xl font-bold tracking-widest text-amber-200">
+        刻 <span class="text-xs font-sans text-stone-400 font-normal">KOKU</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="location-text" class="text-xs text-stone-400 font-mono">東京（計算中...）</div>
+        <!-- ヘルプボタン -->
+        <button 
+          id="open-help-btn"
+          aria-label="刻の一覧・ヘルプ"
+          class="w-7 h-7 rounded-full bg-stone-900 hover:bg-stone-800 border border-stone-700 flex items-center justify-center text-xs font-serif-ja text-amber-300 transition"
+        >
+          ？
+        </button>
+      </div>
     </header>
 
     <!-- 和時計ゲージカード -->
@@ -72,6 +84,156 @@
 
   </div>
 
+  <!-- ヘルプモーダル（全12刻の一覧） -->
+  <div id="help-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-stone-700 rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- モーダルヘッダー -->
+      <div class="p-5 border-b border-stone-800 flex justify-between items-center bg-stone-950/60">
+        <div>
+          <h2 class="font-serif-ja text-lg font-bold text-amber-200">江戸の十二刻と時間栄養学</h2>
+          <p class="text-[11px] text-stone-400 mt-0.5">日の出・日没に合わせた生体リズムの全体像</p>
+        </div>
+        <button id="close-help-btn" class="text-stone-400 hover:text-stone-100 p-1 text-xl font-mono">
+          ✕
+        </button>
+      </div>
+
+      <!-- モーダルコンテンツ（スクロール領域） -->
+      <div class="p-5 overflow-y-auto space-y-6 text-xs leading-relaxed">
+        
+        <!-- 不定時法の解説 -->
+        <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-900/30 text-stone-300 text-[11px] space-y-1.5">
+          <div class="font-serif-ja font-bold text-amber-300">【不定時法とは】</div>
+          <p>夜明け（明け六つ）と日没（暮れ六つ）を基準に、昼と夜をそれぞれ6等分（計12刻）する江戸時代の時刻制度です。季節によって1刻の長さが伸縮し、自然の明暗サイクルに身体を完全同調させます。</p>
+        </div>
+
+        <!-- 昼の部 -->
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <h3 class="font-serif-ja font-bold text-amber-300 text-sm">昼の六刻（明期・活動期）</h3>
+          </div>
+          <div class="space-y-2.5">
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">明け六つ（卯の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">夜明け（市民薄明）</span>
+              </div>
+              <p class="text-stone-400">【覚醒・親時計リセット】朝日を浴びて水分補給。脳の主時計を光でリセットします。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">朝五つ（辰の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">朝〜午前前半</span>
+              </div>
+              <p class="text-stone-400">【高タンパク朝食】タンパク質と複合糖質を摂り、内臓の末梢時計を起動・同調させます。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">朝四つ（巳の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">前後半</span>
+              </div>
+              <p class="text-stone-400">【深層集中（Deep Work）】集中力・論理思考がピーク。通知を切り最重要作業に充てます。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">昼九つ（午の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">南中（正午頃）</span>
+              </div>
+              <p class="text-stone-400">【昼食 & 15分仮眠】消化器を労る昼食を摂り、食後は15分程度のパワーナップをとります。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">昼八つ（未の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">昼下がり</span>
+              </div>
+              <p class="text-stone-400">【対話・協調タスク】体温が上昇し反応速度が向上。MTGや作業タスクに適した刻です。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">夕七つ（申の刻）</strong>
+                <span class="text-[10px] text-amber-400/80 font-mono">夕方</span>
+              </div>
+              <p class="text-stone-400">【運動・業務終了】筋出力が最大化。トレーニングや1日のまとめ作業を行います。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 夜の部 -->
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+            <h3 class="font-serif-ja font-bold text-indigo-300 text-sm">夜の六刻（暗期・休息・絶食期）</h3>
+          </div>
+          <div class="space-y-2.5">
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">暮れ六つ（酉の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">日没（市民薄明）</span>
+              </div>
+              <p class="text-stone-400">【夕食（軽め）・仕事終了】日没。メラトニン分泌に備え、夕食を早めに済ませます。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">夜五つ（戌の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">夜前半</span>
+              </div>
+              <p class="text-stone-400">【入浴・リラックス】間接照明に切り替え、ぬるめの湯船に浸かって深部体温を調整します。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">夜四つ（亥の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">就寝前</span>
+              </div>
+              <p class="text-stone-400">【就寝準備・内省】ブルーライトを遮断し、静かに読書や内省をして睡眠へ移行します。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">夜九つ（子の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">正子（深夜）</span>
+              </div>
+              <p class="text-stone-400">【深睡眠・成長ホルモン】完全就寝。細胞修復と記憶整理のゴールデンタイム。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">夜八つ（丑の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">未明</span>
+              </div>
+              <p class="text-stone-400">【内臓休息・オートファジー】胃腸を完全に休ませ、細胞の自食・浄化作用を促します。</p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
+              <div class="flex justify-between items-baseline mb-1">
+                <strong class="font-serif-ja text-stone-100 text-xs">暁七つ（寅の刻）</strong>
+                <span class="text-[10px] text-indigo-400/80 font-mono">夜明け前</span>
+              </div>
+              <p class="text-stone-400">【起床準備】コルチゾールが微増し始め、朝の覚醒に向けて心身が準備に入ります。</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- モーダルフッター -->
+      <div class="p-4 border-t border-stone-800 bg-stone-950/60 flex justify-end">
+        <button id="modal-ok-btn" class="px-5 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-stone-950 transition">
+          閉じる
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script>
     // デフォルト座標（東京）
     let lat = 35.6895, lng = 139.6917;
@@ -105,7 +267,6 @@
       let dayLength = dusk - dawn;
       let dayKokuLen = dayLength / 6;
       
-      // 夜の長さ（翌日明け六つ - 当日暮れ六つ）
       let tomorrow = new Date(now.getTime() + 24*60*60*1000);
       let tomorrowTimes = SunCalc.getTimes(tomorrow, lat, lng);
       let nightLength = tomorrowTimes.dawn - dusk;
@@ -116,7 +277,6 @@
       let isDay = false;
 
       if (now >= dawn && now < dusk) {
-        // 昼の部（0〜5）
         isDay = true;
         let elapsed = now - dawn;
         let kokuIndex = Math.floor(elapsed / dayKokuLen);
@@ -124,13 +284,11 @@
         startTime = new Date(dawn.getTime() + currentIdx * dayKokuLen);
         endTime = new Date(dawn.getTime() + (currentIdx + 1) * dayKokuLen);
       } else {
-        // 夜の部（6〜11）
         isDay = false;
         let elapsed;
         if (now >= dusk) {
           elapsed = now - dusk;
         } else {
-          // 0時〜明け六つ前
           let yesterday = new Date(now.getTime() - 24*60*60*1000);
           let yesterdayTimes = SunCalc.getTimes(yesterday, lat, lng);
           let prevNightLen = dawn - yesterdayTimes.dusk;
@@ -147,7 +305,6 @@
       const totalKokuTime = endTime - startTime;
       const progress = Math.min(Math.max(((now - startTime) / totalKokuTime) * 100, 0), 100);
 
-      // DOM反映
       document.getElementById('koku-main').innerText = koku.name;
       document.getElementById('koku-sub').innerText = koku.sub;
       document.getElementById('day-night-badge').innerText = isDay ? "明期（昼の部）" : "暗期（夜の部）";
@@ -173,8 +330,24 @@
       updateClock();
     }
 
-    setInterval(updateClock, 30000); // 30秒ごとに更新
+    setInterval(updateClock, 30000);
     updateClock();
+
+    // モーダル開閉制御
+    const helpModal = document.getElementById('help-modal');
+    const openHelpBtn = document.getElementById('open-help-btn');
+    const closeHelpBtn = document.getElementById('close-help-btn');
+    const modalOkBtn = document.getElementById('modal-ok-btn');
+
+    function openModal() { helpModal.classList.remove('hidden'); }
+    function closeModal() { helpModal.classList.add('hidden'); }
+
+    openHelpBtn.addEventListener('click', openModal);
+    closeHelpBtn.addEventListener('click', closeModal);
+    modalOkBtn.addEventListener('click', closeModal);
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) closeModal();
+    });
   </script>
 </body>
 </html>
