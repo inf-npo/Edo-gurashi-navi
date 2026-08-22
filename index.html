@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>刻 - KOKU | 不定時法・時間栄養学ダッシュボード</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SunCalc CDN (太陽位置計算) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&display=swap');
+    .font-serif-ja { font-family: 'Shippori Mincho', serif; }
+  </style>
+</head>
+<body class="bg-stone-950 text-stone-100 min-h-screen antialiased">
+  <div class="max-w-md mx-auto p-4 space-y-4">
+    
+    <!-- ヘッダー -->
+    <header class="flex justify-between items-center py-2 border-b border-stone-850">
+      <div class="font-serif-ja text-xl font-bold tracking-widest text-amber-200">刻 <span class="text-xs font-sans text-stone-400 font-normal">KOKU</span></div>
+      <div id="location-text" class="text-xs text-stone-400 font-mono">東京（計算中...）</div>
+    </header>
+
+    <!-- 和時計ゲージカード -->
+    <div class="rounded-3xl bg-gradient-to-b from-stone-900 to-stone-950 p-6 border border-stone-800 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <span class="px-3 py-1 rounded-full text-xs bg-amber-950/60 text-amber-300 border border-amber-800/40">
+          ● 二十四節気・処暑
+        </span>
+        <span id="day-night-badge" class="text-xs text-stone-400 font-mono">昼の部</span>
+      </div>
+
+      <div class="text-center my-6">
+        <div id="koku-sub" class="text-xs text-amber-400/80 font-serif-ja tracking-widest mb-1">巳の刻（あさよっつ）</div>
+        <h1 id="koku-main" class="text-5xl font-serif-ja font-bold text-stone-50">朝四つ</h1>
+        <p id="koku-time" class="text-xs text-stone-400 mt-2 font-mono">--:-- 〜 --:--</p>
+      </div>
+
+      <!-- プログレスバー -->
+      <div class="space-y-1.5">
+        <div class="w-full bg-stone-800 rounded-full h-2.5 p-0.5 border border-stone-700">
+          <div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-300 transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-stone-400 font-mono">
+          <span>刻の初め</span>
+          <span id="progress-text">0%</span>
+          <span>刻の終り</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推奨アクション -->
+    <div class="rounded-2xl bg-stone-900 p-5 border border-stone-800">
+      <div class="text-xs font-semibold text-amber-400 tracking-wider mb-1">⚡ 推奨アクション</div>
+      <h3 id="action-title" class="text-base font-serif-ja font-bold text-stone-100">深層集中（Deep Work）</h3>
+      <p id="action-desc" class="text-xs text-stone-400 mt-1.5 leading-relaxed">
+        午前中のインスリン感受性と認知機能が高まる時間帯です。重要タスクに充ててください。
+      </p>
+    </div>
+
+    <!-- 節気・養生カード -->
+    <div class="rounded-2xl bg-stone-900/80 p-5 border border-stone-800 space-y-3">
+      <div class="text-xs font-serif-ja font-bold text-stone-300">❖ 処暑の養生（時間栄養学）</div>
+      <div class="text-xs text-stone-400 bg-stone-950 p-3 rounded-xl border border-stone-850">
+        <strong class="text-amber-300">旬の和食:</strong> 冬瓜と豚肉の煮物（カリウム・ビタミンB1補給）
+      </div>
+      <div class="text-xs text-stone-400 bg-stone-950 p-3 rounded-xl border border-stone-850">
+        <strong class="text-rose-300">季節の和菓子:</strong> 錦玉羹（寒天の食物繊維で整腸）
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // デフォルト座標（東京）
+    let lat = 35.6895, lng = 139.6917;
+
+    const KOKU_DATA = [
+      { name: "明け六つ", sub: "卯の刻（あけむつ）", isDay: true, action: "覚醒・主時計リセット", desc: "朝日を浴びて水分補給。体内時計の親時計を合わせます。" },
+      { name: "朝五つ", sub: "辰の刻（あさいつつ）", isDay: true, action: "高タンパク朝食", desc: "タンパク質と複合糖質を摂り、内臓の末梢時計を起動します。" },
+      { name: "朝四つ", sub: "巳の刻（あさよっつ）", isDay: true, action: "深層集中（Deep Work）", desc: "集中力が最も高まる時間帯。最重要タスクに取り組みます。" },
+      { name: "昼九つ", sub: "午の刻（ひるここのつ）", isDay: true, action: "昼食 & 15分仮眠", desc: "主食を適量摂り、食後は15分程度の軽い休息をとります。" },
+      { name: "昼八つ", sub: "未の刻（ひるやつ）", isDay: true, action: "対話・協調タスク", desc: "MTGやクリエイティブな発想作業に適した活動期です。" },
+      { name: "夕七つ", sub: "申の刻（ゆうななつ）", isDay: true, action: "運動・タスク終了", desc: "体温と筋出力がピーク。軽運動や1日のまとめを行います。" },
+      { name: "暮れ六つ", sub: "酉の刻（くれむつ）", isDay: false, action: "夕食（軽め）・仕事終了", desc: "日没。メラトニン分泌に備え、夕食を済ませます。" },
+      { name: "夜五つ", sub: "戌の刻（よるいつつ）", isDay: false, action: "入浴・リラックス", desc: "間接照明に切り替え、湯船に浸かって深部体温を調整します。" },
+      { name: "夜四つ", sub: "亥の刻（よるよっつ）", isDay: false, action: "就寝準備・内省", desc: "スマホを置き、静かに読書や内省をして過ごします。" },
+      { name: "夜九つ", sub: "子の刻（よるここのつ）", isDay: false, action: "深睡眠・成長ホルモン", desc: "完全就寝。細胞修復と記憶整理のゴールデンタイム。" },
+      { name: "夜八つ", sub: "丑の刻（よるやつ）", isDay: false, action: "深睡眠・内臓休息", desc: "胃腸を完全に休ませ、オートファジーを活性化させます。" },
+      { name: "暁七つ", sub: "寅の刻（あかつきななつ）", isDay: false, action: "起床準備", desc: "体温が徐々に上がり始め、朝の覚醒に向けて準備します。" }
+    ];
+
+    function formatTime(d) {
+      return d.toTimeString().slice(0, 5);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const times = SunCalc.getTimes(now, lat, lng);
+      
+      const dawn = times.dawn; // 明け六つ基準（市民薄明初）
+      const dusk = times.dusk; // 暮れ六つ基準（市民薄明終）
+      
+      let dayLength = dusk - dawn;
+      let dayKokuLen = dayLength / 6;
+      
+      // 夜の長さ（翌日明け六つ - 当日暮れ六つ）
+      let tomorrow = new Date(now.getTime() + 24*60*60*1000);
+      let tomorrowTimes = SunCalc.getTimes(tomorrow, lat, lng);
+      let nightLength = tomorrowTimes.dawn - dusk;
+      let nightKokuLen = nightLength / 6;
+
+      let currentIdx = 0;
+      let startTime, endTime;
+      let isDay = false;
+
+      if (now >= dawn && now < dusk) {
+        // 昼の部（0〜5）
+        isDay = true;
+        let elapsed = now - dawn;
+        let kokuIndex = Math.floor(elapsed / dayKokuLen);
+        currentIdx = Math.min(kokuIndex, 5);
+        startTime = new Date(dawn.getTime() + currentIdx * dayKokuLen);
+        endTime = new Date(dawn.getTime() + (currentIdx + 1) * dayKokuLen);
+      } else {
+        // 夜の部（6〜11）
+        isDay = false;
+        let elapsed;
+        if (now >= dusk) {
+          elapsed = now - dusk;
+        } else {
+          // 0時〜明け六つ前
+          let yesterday = new Date(now.getTime() - 24*60*60*1000);
+          let yesterdayTimes = SunCalc.getTimes(yesterday, lat, lng);
+          let prevNightLen = dawn - yesterdayTimes.dusk;
+          nightKokuLen = prevNightLen / 6;
+          elapsed = now - yesterdayTimes.dusk;
+        }
+        let kokuIndex = Math.floor(elapsed / nightKokuLen);
+        currentIdx = 6 + Math.min(kokuIndex, 5);
+        startTime = new Date(dusk.getTime() + (currentIdx - 6) * nightKokuLen);
+        endTime = new Date(dusk.getTime() + (currentIdx - 5) * nightKokuLen);
+      }
+
+      const koku = KOKU_DATA[currentIdx];
+      const totalKokuTime = endTime - startTime;
+      const progress = Math.min(Math.max(((now - startTime) / totalKokuTime) * 100, 0), 100);
+
+      // DOM反映
+      document.getElementById('koku-main').innerText = koku.name;
+      document.getElementById('koku-sub').innerText = koku.sub;
+      document.getElementById('day-night-badge').innerText = isDay ? "明期（昼の部）" : "暗期（夜の部）";
+      document.getElementById('koku-time').innerText = `${formatTime(startTime)} 〜 ${formatTime(endTime)}`;
+      document.getElementById('progress-bar').style.width = `${progress.toFixed(1)}%`;
+      document.getElementById('progress-text').innerText = `${Math.round(progress)}%`;
+      document.getElementById('action-title').innerText = koku.action;
+      document.getElementById('action-desc').innerText = koku.desc;
+    }
+
+    // GPS取得
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+        document.getElementById('location-text').innerText = `現在地（北緯${lat.toFixed(1)}°）`;
+        updateClock();
+      }, () => {
+        document.getElementById('location-text').innerText = `東京（デフォルト）`;
+        updateClock();
+      });
+    } else {
+      updateClock();
+    }
+
+    setInterval(updateClock, 30000); // 30秒ごとに更新
+    updateClock();
+  </script>
+</body>
+</html>
