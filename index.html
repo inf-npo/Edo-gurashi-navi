@@ -11,9 +11,15 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&display=swap');
     .font-serif-ja { font-family: 'Shippori Mincho', serif; }
+    
+    :root {
+      --c-primary: #9079ad;
+      --c-accent: #f59e0b;
+      --c-bg-deep: #0f0b14;
+    }
   </style>
 </head>
-<body class="bg-stone-950 text-stone-100 min-h-screen antialiased selection:bg-amber-900 selection:text-amber-100 pb-12">
+<body class="bg-stone-950 text-stone-100 min-h-screen antialiased selection:bg-amber-900 selection:text-amber-100 pb-12 transition-colors duration-700" style="background-color: var(--c-bg-deep);">
   <div class="max-w-md mx-auto p-4 space-y-4">
     
     <!-- ヘッダー -->
@@ -35,10 +41,10 @@
     </header>
 
     <!-- 和時計ゲージカード -->
-    <div class="rounded-3xl bg-gradient-to-b from-stone-900 to-stone-950 p-6 border border-stone-800 shadow-2xl">
+    <div class="rounded-3xl bg-gradient-to-b from-stone-900/90 to-stone-950/90 p-6 border border-stone-800 shadow-2xl backdrop-blur-sm">
       <div class="flex justify-between items-center mb-4">
-        <span id="season-badge" class="px-3 py-1 rounded-full text-xs bg-amber-950/60 text-amber-300 border border-amber-800/40 font-serif-ja">
-          ● 二十四節気・処暑
+        <span id="season-badge" class="px-3 py-1 rounded-full text-xs font-serif-ja border transition-all duration-500">
+          ● 二十四節気・計算中
         </span>
         <span id="day-night-badge" class="text-xs text-stone-400 font-mono">昼の部</span>
       </div>
@@ -63,7 +69,7 @@
     </div>
 
     <!-- 推奨アクション -->
-    <div class="rounded-2xl bg-stone-900 p-5 border border-stone-800">
+    <div class="rounded-2xl bg-stone-900/80 p-5 border border-stone-800 backdrop-blur-sm">
       <div class="text-xs font-semibold text-amber-400 tracking-wider mb-1">⚡ 推奨アクション</div>
       <h3 id="action-title" class="text-base font-serif-ja font-bold text-stone-100">深層集中（Deep Work）</h3>
       <p id="action-desc" class="text-xs text-stone-400 mt-1.5 leading-relaxed">
@@ -71,14 +77,14 @@
       </p>
     </div>
 
-    <!-- 節気・養生カード（ディープリンク機能付き） -->
-    <div class="rounded-3xl bg-stone-900/90 p-5 border border-stone-800 shadow-xl space-y-4">
+    <!-- 節気・養生カード（動的ディープリンク連動） -->
+    <div class="rounded-3xl bg-stone-900/90 p-5 border border-stone-800 shadow-xl space-y-4 backdrop-blur-sm">
       <div class="flex items-center justify-between border-b border-stone-800 pb-3">
         <div>
           <h2 class="text-base font-serif-ja font-bold text-stone-100">
             <span id="term-title">処暑（しょしょ）</span>の養生
           </h2>
-          <p id="term-desc" class="text-[11px] text-stone-400 mt-0.5">夏の暑さが和らぎ、初秋の風が立ち始める頃</p>
+          <p id="term-desc" class="text-[11px] text-stone-400 mt-0.5">暑さが和らぎ初秋の風がそよぐ頃</p>
         </div>
         <span class="text-xl">🍵</span>
       </div>
@@ -93,12 +99,11 @@
         <p id="food-nutrition" class="text-[11px] text-stone-400 leading-relaxed">
           カリウムとビタミンB1で夏の疲労物質を排出し、体を内側から整えます。
         </p>
-        <!-- 和食マップディープリンク -->
         <button 
           id="btn-search-food"
           class="w-full mt-1.5 py-1.5 px-3 rounded-xl bg-stone-900 hover:bg-stone-850 border border-stone-750 text-amber-200 text-xs font-medium flex items-center justify-center gap-1.5 transition"
         >
-          <span>📍 近くの「和食・定食」を探す</span>
+          <span>📍 近くの「旬の和食・定食」を探す</span>
           <span class="text-[10px] text-stone-400">↗</span>
         </button>
       </div>
@@ -113,12 +118,11 @@
         <p id="wagashi-nutrition" class="text-[11px] text-stone-400 leading-relaxed">
           寒天の水溶性食物繊維が急激な血糖値上昇を抑え、午後のエネルギーを維持します。
         </p>
-        <!-- 和菓子マップディープリンク -->
         <button 
           id="btn-search-wagashi"
           class="w-full mt-1.5 py-1.5 px-3 rounded-xl bg-stone-900 hover:bg-stone-850 border border-stone-750 text-rose-200 text-xs font-medium flex items-center justify-center gap-1.5 transition"
         >
-          <span>📍 近くの「和菓子店」を探す</span>
+          <span>📍 近くの「和菓子・デパ地下」を探す</span>
           <span class="text-[10px] text-stone-400">↗</span>
         </button>
       </div>
@@ -136,9 +140,11 @@
 
   </div>
 
-  <!-- ヘルプモーダル（全12刻の一覧） -->
+  <!-- ヘルプモーダル（全12刻の一覧 & 四季ダイアル） -->
   <div id="help-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-stone-900 border border-stone-700 rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- モーダルヘッダー -->
       <div class="p-5 border-b border-stone-800 flex justify-between items-center bg-stone-950/60">
         <div>
           <h2 class="font-serif-ja text-lg font-bold text-amber-200">江戸の十二刻と時間栄養学</h2>
@@ -147,7 +153,24 @@
         <button id="close-help-btn" class="text-stone-400 hover:text-stone-100 p-1 text-xl font-mono">✕</button>
       </div>
 
+      <!-- モーダルコンテンツ（最上部に和時計ダイアル） -->
       <div class="p-5 overflow-y-auto space-y-6 text-xs leading-relaxed">
+        
+        <!-- 【最上部】四季の和時計ダイアル（数式動的Canvas） -->
+        <div class="p-3.5 bg-stone-950 rounded-2xl border border-stone-800 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-serif-ja font-bold text-amber-300">四季の伸縮と不定時法</span>
+            <span class="text-[10px] text-stone-500 font-mono">和時計盤面の昼夜推移</span>
+          </div>
+          <div class="w-full overflow-x-auto py-1">
+            <canvas id="seasonal-dial-canvas" class="w-full max-w-[600px] h-auto rounded-xl block mx-auto"></canvas>
+          </div>
+          <p class="text-[10px] text-stone-400 leading-relaxed">
+            夏至は昼が約14.6時間（1刻≒2.4時間）、冬至は昼が約9.4時間（1刻≒1.6時間）となり、季節によって「1刻の長さ」そのものが伸縮します。
+          </p>
+        </div>
+
+        <!-- 不定時法の解説 -->
         <div class="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-900/30 text-stone-300 text-[11px] space-y-1.5">
           <div class="font-serif-ja font-bold text-amber-300">【不定時法とは】</div>
           <p>夜明け（明け六つ）と日没（暮れ六つ）を基準に、昼と夜をそれぞれ6等分（計12刻）する江戸時代の時刻制度です。季節によって1刻の長さが伸縮し、自然の明暗サイクルに身体を完全同調させます。</p>
@@ -165,7 +188,7 @@
                 <strong class="font-serif-ja text-stone-100 text-xs">明け六つ（卯の刻）</strong>
                 <span class="text-[10px] text-amber-400/80 font-mono">夜明け（市民薄明）</span>
               </div>
-              <p class="text-stone-400">【覚醒・親時計リセット】朝日を浴びて水分補給。脳の主時計を光でリセットします。</p>
+              <p class="text-stone-400">【覚醒・主時計リセット】朝日を浴びて水分補給。脳の親時計を光で同調させます。</p>
             </div>
             <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
               <div class="flex justify-between items-baseline mb-1">
@@ -177,7 +200,7 @@
             <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
               <div class="flex justify-between items-baseline mb-1">
                 <strong class="font-serif-ja text-stone-100 text-xs">朝四つ（巳の刻）</strong>
-                <span class="text-[10px] text-amber-400/80 font-mono">前後半</span>
+                <span class="text-[10px] text-amber-400/80 font-mono">午前後半</span>
               </div>
               <p class="text-stone-400">【深層集中（Deep Work）】集中力・論理思考がピーク。通知を切り最重要作業に充てます。</p>
             </div>
@@ -191,9 +214,9 @@
             <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
               <div class="flex justify-between items-baseline mb-1">
                 <strong class="font-serif-ja text-stone-100 text-xs">昼八つ（未の刻）</strong>
-                <span class="text-[10px] text-amber-400/80 font-mono">昼下がり</span>
+                <span class="text-[10px] text-amber-400/80 font-mono">昼下がり（おやつ）</span>
               </div>
-              <p class="text-stone-400">【対話・協調タスク】体温が上昇し反応速度が向上。MTGや作業タスクに適した刻です。</p>
+              <p class="text-stone-400">【対話・和菓子で血糖ケア】MTGや作業タスクに適した刻。食物繊維豊富な和菓子を嗜みます。</p>
             </div>
             <div class="p-3 bg-stone-950 rounded-xl border border-stone-800">
               <div class="flex justify-between items-baseline mb-1">
@@ -252,7 +275,7 @@
                 <strong class="font-serif-ja text-stone-100 text-xs">暁七つ（寅の刻）</strong>
                 <span class="text-[10px] text-indigo-400/80 font-mono">夜明け前</span>
               </div>
-              <p class="text-stone-400">【起床準備】コルチゾールが微増し始め、朝の覚醒に向けて心身が準備に入ります。</p>
+              <p class="text-stone-400">【起床準備】体温が徐々に上がり始め、朝の覚醒に向けて心身が準備に入ります。</p>
             </div>
           </div>
         </div>
@@ -276,7 +299,7 @@
       { name: "朝五つ", sub: "辰の刻（あさいつつ）", isDay: true, action: "高タンパク朝食", desc: "タンパク質と複合糖質を摂り、内臓の末梢時計を起動します。" },
       { name: "朝四つ", sub: "巳の刻（あさよっつ）", isDay: true, action: "深層集中（Deep Work）", desc: "集中力が最も高まる時間帯。最重要タスクに取り組みます。" },
       { name: "昼九つ", sub: "午の刻（ひるここのつ）", isDay: true, action: "昼食 & 15分仮眠", desc: "主食を適量摂り、食後は15分程度の軽い休息をとります。" },
-      { name: "昼八つ", sub: "未の刻（ひるやつ）", isDay: true, action: "対話・協調タスク", desc: "MTGやクリエイティブな発想作業に適した活動期です。" },
+      { name: "昼八つ", sub: "未の刻（ひるやつ）", isDay: true, action: "対話・和菓子で血糖ケア", desc: "MTGや作業タスクに適した刻。食物繊維豊富な和菓子でケアします。" },
       { name: "夕七つ", sub: "申の刻（ゆうななつ）", isDay: true, action: "運動・タスク終了", desc: "体温と筋出力がピーク。軽運動や1日のまとめを行います。" },
       { name: "暮れ六つ", sub: "酉の刻（くれむつ）", isDay: false, action: "夕食（軽め）・仕事終了", desc: "日没。メラトニン分泌に備え、夕食を済ませます。" },
       { name: "夜五つ", sub: "戌の刻（よるいつつ）", isDay: false, action: "入浴・リラックス", desc: "間接照明に切り替え、湯船に浸かって深部体温を調整します。" },
@@ -286,24 +309,96 @@
       { name: "暁七つ", sub: "寅の刻（あかつきななつ）", isDay: false, action: "起床準備", desc: "体温が徐々に上がり始め、朝の覚醒に向けて準備します。" }
     ];
 
-    // Google Maps ディープリンク生成
-    function openGoogleMaps(query) {
+    // 二十四節気・伝統色マスターデータ
+    const SOLAR_TERMS = [
+      { name: "小寒", month: 1, day: 5, primary: "#cbb994", accent: "#d4a373", bg: "#0d0c0e", desc: "寒の入り・静寂の銀世界", food: "七草粥・根菜の味噌汁", wagashi: "花びら餅（はなびらもち）" },
+      { name: "大寒", month: 1, day: 20, primary: "#e16b8c", accent: "#d4a373", bg: "#12090d", desc: "寒極まり・春の兆しを待つ頃", food: "粕汁・寒鰤の塩焼き", wagashi: "うぐいす餅（うぐいすもち）" },
+      { name: "立春", month: 2, day: 4, primary: "#7ba23f", accent: "#fde68a", bg: "#0d1409", desc: "春の気配・東風凍を解く頃", food: "浅利と春キャベツの酒蒸し", wagashi: "立春大吉餅・桜餅" },
+      { name: "雨水", month: 2, day: 19, primary: "#a8c97f", accent: "#fef08a", bg: "#0a1208", desc: "雪が雨となり草木が萌え始める", food: "菜の花と鰆の西京焼き", wagashi: "草餅（くさもち）・よもぎ団子" },
+      { name: "啓蟄", month: 3, day: 5, primary: "#82ae46", accent: "#f8b500", bg: "#0b1307", desc: "冬籠りの虫が目覚め活動を始める", food: "筍ごはん・ふきのとう天ぷら", wagashi: "引千切（ひちぎり）" },
+      { name: "春分", month: 3, day: 20, primary: "#e87a90", accent: "#f8b500", bg: "#170b0f", desc: "昼夜等分・自然と調和する節目", food: "鯛飯・若竹煮", wagashi: "牡丹餅（ぼたもち）" },
+      { name: "清明", month: 4, day: 4, primary: "#f596aa", accent: "#fbbf24", bg: "#150c10", desc: "万物清らかで生き生きと輝く頃", food: "初鰹のたたき・新玉葱", wagashi: "桜餅（さくらもち）" },
+      { name: "穀雨", month: 4, day: 20, primary: "#00896c", accent: "#f59e0b", bg: "#06130e", desc: "春雨が百穀を潤し育てる頃", food: "新茶の茶粥・めばる煮付け", wagashi: "草団子（くさだんご）" },
+      { name: "立夏", month: 5, day: 5, primary: "#007b43", accent: "#fbbf24", bg: "#06130b", desc: "初夏・新緑が目に鮮やかな頃", food: "新茶葉の天ぷら・初鰹", wagashi: "柏餅（かしわもち）・粽" },
+      { name: "小満", month: 5, day: 21, primary: "#316745", accent: "#f59e0b", bg: "#07120a", desc: "万物が満ちて成長する季節", food: "そら豆ごはん・鯵の南蛮漬け", wagashi: "若鮎（わかあゆ）" },
+      { name: "芒種", month: 6, day: 5, primary: "#408080", accent: "#f59e0b", bg: "#061111", desc: "穀物の種を蒔き梅雨を迎える頃", food: "梅紫蘇ごはん・鰯の生姜煮", wagashi: "水無月（みなづき）" },
+      { name: "夏至", month: 6, day: 21, primary: "#b7282e", accent: "#f59e0b", bg: "#140708", desc: "昼が最も長く陽の極まる日", food: "蛸ときゅうりの酢の物・冬瓜汁", wagashi: "水無月（みなづき）" },
+      { name: "小暑", month: 7, day: 7, primary: "#006e54", accent: "#f59e0b", bg: "#05110e", desc: "梅雨明け近く本格的な暑さの始まり", food: "焼き鱧・素麺・冬瓜", wagashi: "水羊羹（みずようかん）" },
+      { name: "大暑", month: 7, day: 23, primary: "#fcc800", accent: "#ea5506", bg: "#141004", desc: "夏の盛り・最も暑い季節", food: "鰻の蒲焼・ゴーヤチャンプルー", wagashi: "葛きり（くずきり）" },
+      { name: "立秋", month: 8, day: 7, primary: "#917347", accent: "#f59e0b", bg: "#120e09", desc: "暦の上で秋の気配が立ち始める", food: "枝豆ごはん・焼き茄子", wagashi: "錦玉羹（きんぎょくかん）" },
+      { name: "処暑", month: 8, day: 23, primary: "#9079ad", accent: "#f59e0b", bg: "#0f0b14", desc: "暑さが和らぎ初秋の風がそよぐ頃", food: "冬瓜と豚肉の生姜煮・焼き茄子", wagashi: "錦玉羹（きんぎょくかん）・葛饅頭" },
+      { name: "白露", month: 9, day: 7, primary: "#889da4", accent: "#f59e0b", bg: "#0b1012", desc: "草木に白い露が宿り始める頃", food: "秋刀魚の塩焼き・すだち", wagashi: "月見団子（つきみだんご）" },
+      { name: "秋分", month: 9, day: 23, primary: "#ea5506", accent: "#bf783a", bg: "#140a04", desc: "昼夜等分・秋の深まりと豊穣", food: "きのこご飯・鮭の幽庵焼き", wagashi: "お萩（おはぎ）" },
+      { name: "寒露", month: 10, day: 8, primary: "#bf783a", accent: "#f59e0b", bg: "#130a05", desc: "夜の露が冷たく感じられる頃", food: "栗ごはん・戻り鰹", wagashi: "栗きんとん（くりきんとん）" },
+      { name: "霜降", month: 10, day: 23, primary: "#954a2a", accent: "#f59e0b", bg: "#130805", desc: "初霜が降り山々が紅葉に染まる", food: "柿の白和え・秋鮭ときのこ鍋", wagashi: "柿羊羹（かきようかん）" },
+      { name: "立冬", month: 11, day: 7, primary: "#695444", accent: "#f59e0b", bg: "#0f0d0b", desc: "冬の気配が立ち寒さが増す頃", food: "根菜のけんちん汁・牡蠣飯", wagashi: "亥の子餅（いのこもち）" },
+      { name: "小雪", month: 11, day: 22, primary: "#70697b", accent: "#e5b971", bg: "#0e0d10", desc: "わずかな雪が舞い始める頃", food: "鰤大根・柚子釜豆腐", wagashi: "織部饅頭（おりべまんじゅう）" },
+      { name: "大雪", month: 12, day: 7, primary: "#505457", accent: "#e5b971", bg: "#0b0c0d", desc: "雪が激しく降り冬が本格化する", food: "鱈ちり鍋・春菊のお浸し", wagashi: "ゆず餅（ゆずもち）" },
+      { name: "冬至", month: 12, day: 21, primary: "#ffb900", accent: "#c1a470", bg: "#140f04", desc: "夜が最も長く陰の極まる日", food: "南瓜の小豆煮・柚子湯", wagashi: "冬至粥・かぼちゃ饅頭" }
+    ];
+
+    // 節気と伝統色の動的適用
+    function applySeasonalTheme() {
+      const now = new Date();
+      const m = now.getMonth() + 1;
+      const d = now.getDate();
+
+      let currentTerm = SOLAR_TERMS[SOLAR_TERMS.length - 1]; // 冬至デフォルト
+      for (let i = SOLAR_TERMS.length - 1; i >= 0; i--) {
+        const term = SOLAR_TERMS[i];
+        if (m > term.month || (m === term.month && d >= term.day)) {
+          currentTerm = term;
+          break;
+        }
+      }
+
+      // CSS変数の更新
+      const root = document.documentElement;
+      root.style.setProperty('--c-primary', currentTerm.primary);
+      root.style.setProperty('--c-accent', currentTerm.accent);
+      root.style.setProperty('--c-bg-deep', currentTerm.bg);
+
+      // バッジ & 節気カードの動的更新
+      const badge = document.getElementById('season-badge');
+      if (badge) {
+        badge.innerText = `● 二十四節気・${currentTerm.name}`;
+        badge.style.color = currentTerm.primary;
+        badge.style.borderColor = `${currentTerm.primary}66`;
+        badge.style.backgroundColor = `${currentTerm.primary}18`;
+      }
+
+      document.getElementById('term-title').innerText = `${currentTerm.name}`;
+      document.getElementById('term-desc').innerText = currentTerm.desc;
+      document.getElementById('food-name').innerText = currentTerm.food;
+      document.getElementById('wagashi-name').innerText = currentTerm.wagashi;
+    }
+
+    // Google Maps ディープリンク（メニュー・デパ地下動的連動）
+    function openGoogleMaps(queryType) {
+      let query = "";
+
+      if (queryType === 'food') {
+        const foodElementText = document.getElementById('food-name').innerText;
+        const primaryFood = foodElementText.split(/[・と\s]/)[0];
+        query = `${primaryFood} 和食 定食 旬料理`;
+      } else if (queryType === 'wagashi') {
+        const wagashiElementText = document.getElementById('wagashi-name').innerText;
+        const primaryWagashi = wagashiElementText.replace(/（.*?）/g, '').split(/[・\s]/)[0];
+        query = `${primaryWagashi} 和菓子 デパ地下 百貨店`;
+      }
+
       const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}&center=${lat},${lng}`;
       window.open(url, '_blank');
     }
 
-    document.getElementById('btn-search-food').addEventListener('click', () => {
-      openGoogleMaps("和食 定食");
-    });
-
-    document.getElementById('btn-search-wagashi').addEventListener('click', () => {
-      openGoogleMaps("和菓子屋");
-    });
+    document.getElementById('btn-search-food').addEventListener('click', () => openGoogleMaps('food'));
+    document.getElementById('btn-search-wagashi').addEventListener('click', () => openGoogleMaps('wagashi'));
 
     function formatTime(d) {
       return d.toTimeString().slice(0, 5);
     }
 
+    // 刻時計更新
     function updateClock() {
       const now = new Date();
       const times = SunCalc.getTimes(now, lat, lng);
@@ -362,7 +457,112 @@
       document.getElementById('action-desc').innerText = koku.desc;
     }
 
-    // GPS取得
+    // 四季の和時計ダイアル（数式ベース動的Canvas描画）
+    function renderSeasonalDials() {
+      const canvas = document.getElementById('seasonal-dial-canvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 2;
+      const width = 600, height = 170;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+
+      ctx.fillStyle = "#0c0a09";
+      ctx.fillRect(0, 0, width, height);
+
+      const dialRadius = 38;
+      const spacing = width / 4;
+      const seasonNames = ["春分", "夏至", "秋分", "冬至"];
+      const seasonHues  = [350, 15, 285, 45]; // 桜・茜・竜胆・柚子
+
+      // 1. サインウェーブ（明け六つの境界線）
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(217, 119, 6, 0.25)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      for (let i = 0; i < 4; i++) {
+        const cx = spacing * i + spacing / 2;
+        const dayRatio = 0.50 + 0.11 * Math.sin((i * Math.PI) / 2);
+        const dawnY = 68 + (0.50 - dayRatio) * 50;
+        if (i === 0) ctx.moveTo(cx, dawnY); else ctx.lineTo(cx, dawnY);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 2. 各季節のダイアル描画
+      for (let i = 0; i < 4; i++) {
+        const cx = spacing * i + spacing / 2;
+        const cy = 68;
+        
+        const dayRatio = 0.50 + 0.11 * Math.sin((i * Math.PI) / 2);
+        const hue = seasonHues[i];
+        const dayHours = (dayRatio * 24).toFixed(1);
+
+        // 夜のベース円
+        ctx.beginPath();
+        ctx.arc(cx, cy, dialRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "#111827";
+        ctx.fill();
+        ctx.strokeStyle = "#292524";
+        ctx.stroke();
+
+        // 昼の扇形（伝統色グラデーション）
+        const dayAngle = dayRatio * Math.PI * 2;
+        const startAngle = -Math.PI / 2 - dayAngle / 2;
+        const endAngle   = -Math.PI / 2 + dayAngle / 2;
+
+        const grad = ctx.createRadialGradient(cx, cy, 3, cx, cy, dialRadius);
+        grad.addColorStop(0, `hsl(${hue}, 90%, 85%)`);
+        grad.addColorStop(1, `hsl(${hue}, 80%, 50%)`);
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, dialRadius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 外周リング & 12刻目盛り
+        ctx.beginPath();
+        ctx.arc(cx, cy, dialRadius + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, 0.4)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        for (let k = 0; k < 12; k++) {
+          const angle = (k / 12) * Math.PI * 2 - Math.PI / 2;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(angle) * (dialRadius - 4), cy + Math.sin(angle) * (dialRadius - 4));
+          ctx.lineTo(cx + Math.cos(angle) * dialRadius, cy + Math.sin(angle) * dialRadius);
+          ctx.strokeStyle = (k % 3 === 0) ? "#fef3c7" : "rgba(255,255,255,0.25)";
+          ctx.lineWidth = (k % 3 === 0) ? 1.5 : 0.8;
+          ctx.stroke();
+        }
+
+        // 盤面テキスト（午 / 子）
+        ctx.fillStyle = "#1c1917";
+        ctx.font = "bold 9px 'Shippori Mincho', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("午", cx, cy - dialRadius + 10);
+        ctx.fillStyle = "#78716c";
+        ctx.fillText("子", cx, cy + dialRadius - 10);
+
+        // 下部ラベル
+        ctx.fillStyle = "#fef3c7";
+        ctx.font = "bold 12px 'Shippori Mincho', serif";
+        ctx.fillText(seasonNames[i], cx, cy + dialRadius + 22);
+        ctx.fillStyle = "#a8a29e";
+        ctx.font = "9px system-ui, sans-serif";
+        ctx.fillText(i % 2 === 0 ? "昼夜等分" : `昼 ${dayHours}h`, cx, cy + dialRadius + 35);
+      }
+    }
+
+    // 初期化 & GPS取得
+    applySeasonalTheme();
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
         lat = pos.coords.latitude;
@@ -386,7 +586,10 @@
     const closeHelpBtn = document.getElementById('close-help-btn');
     const modalOkBtn = document.getElementById('modal-ok-btn');
 
-    function openModal() { helpModal.classList.remove('hidden'); }
+    function openModal() {
+      helpModal.classList.remove('hidden');
+      setTimeout(renderSeasonalDials, 50);
+    }
     function closeModal() { helpModal.classList.add('hidden'); }
 
     openHelpBtn.addEventListener('click', openModal);
